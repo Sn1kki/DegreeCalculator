@@ -4,9 +4,10 @@
 
 
 Инструкция:
-`python -m venv .venv` - Создаём venv
-`.\.venv\Scripts\activate` - Активируем venv
-`pip install -r requirements.txt` - Установка зависимостей
-`python .\manage.py runsever` - Запускаем локальный сервак с проектом
+Все в консоли
+1) `python -m venv .venv` - Создаём venv
+2) `.\.venv\Scripts\activate` - Активируем venv
+3) `pip install -r requirements.txt` - Установка зависимостей
+4) `python .\manage.py runsever` - Запускаем локальный сервак с проектом
 
 Если все правильно, то будет чики пуки
