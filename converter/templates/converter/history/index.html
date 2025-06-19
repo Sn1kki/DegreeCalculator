@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История переводов</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="history-page">
+    <h1>История переводов</h1>
+    <table class="history-table">
+        <thead>
+            <tr>
+                <th>Исходное значение</th>
+                <th></th>
+                <th>Результат</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for from_value, to_value in history %}
+                <tr>
+                    <td>{{ from_value }}</td>
+                    <td style="text-align: center; width: 50px;">→</td>
+                    <td>{{ to_value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="controls">
+        <button onclick="window.history.back()" class="control-button">Назад</button>
+        <button onclick="clearHistory()" class="control-button">Очистить историю</button>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    function clearHistory() {
+        if (confirm("Вы уверены, что хотите очистить историю?")) {
+            fetch('/history/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(() => window.location.reload());
+        }
+    }
+</script>
+</body>
+</html>

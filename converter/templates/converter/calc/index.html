@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер систем счисления</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="calculator">
+    <form method="POST" id="converterForm">
+        {% csrf_token %}
+        <div class="converter-options">
+            <div class="converter-row">
+                <span class="label">Из:</span>
+                <select name="from_base" id="fromBase">
+                    <option value="2"{% if from_base == 2 %} selected{% endif %}>Двоичная (2)</option>
+                    <option value="8"{% if from_base == 8 %} selected{% endif %}>Восьмеричная (8)</option>
+                    <option value="10"{% if from_base == 10 %} selected{% endif %}>Десятичная (10)</option>
+                    <option value="16"{% if from_base == 16 %} selected{% endif %}>Шестнадцатеричная (16)</option>
+                    <option value="35"{% if from_base == 35 %} selected{% endif %}>35-ричная (35)</option>
+                </select>
+            </div>
+            <div class="converter-row">
+                <span class="label">В:</span>
+                <select name="to_base" id="toBase">
+                    <option value="2"{% if to_base == 2 %} selected{% endif %}>Двоичная (2)</option>
+                    <option value="8"{% if to_base == 8 %} selected{% endif %}>Восьмеричная (8)</option>
+                    <option value="10"{% if to_base == 10 %} selected{% endif %}>Десятичная (10)</option>
+                    <option value="16"{% if to_base == 16 %} selected{% endif %}>Шестнадцатеричная (16)</option>
+                    <option value="35"{% if to_base == 35 %} selected{% endif %}>35-ричная (35)</option>
+                </select>
+            </div>
+        </div>
+        <div id="display" class="display">{{ error|default:result|default:"0" }}</div>
+        <input type="hidden" name="num" id="hiddenInput" value="{{ num|default:"0" }}">
+        <button type="submit" class="convert-button">Перевести</button>
+    </form>
+    <div class="button-container">
+        <button class="button" onclick="appendDigit('A')">A</button>
+        <button class="button" onclick="appendDigit('B')">B</button>
+        <button class="button" onclick="appendDigit('C')">C</button>
+        <button class="button" onclick="appendDigit('D')">D</button>
+        <button class="button" onclick="appendDigit('E')">E</button>
+        <button class="button backspace-button" onclick="backspace()">←</button>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="appendDigit('F')">F</button>
+        <button class="button" onclick="appendDigit('G')">G</button>
+        <button class="button" onclick="appendDigit('H')">H</button>
+        <button class="button" onclick="appendDigit('I')">I</button>
+        <button class="button" onclick="appendDigit('J')">J</button>
+        <button class="button" onclick="appendDigit('1')">1</button>
+        <button class="button" onclick="appendDigit('2')">2</button>
+        <button class="button" onclick="appendDigit('3')">3</button>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="appendDigit('K')">K</button>
+        <button class="button" onclick="appendDigit('L')">L</button>
+        <button class="button" onclick="appendDigit('M')">M</button>
+        <button class="button" onclick="appendDigit('N')">N</button>
+        <button class="button" onclick="appendDigit('O')">O</button>
+        <button class="button" onclick="appendDigit('4')">4</button>
+        <button class="button" onclick="appendDigit('5')">5</button>
+        <button class="button" onclick="appendDigit('6')">6</button>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="appendDigit('P')">P</button>
+        <button class="button" onclick="appendDigit('Q')">Q</button>
+        <button class="button" onclick="appendDigit('R')">R</button>
+        <button class="button" onclick="appendDigit('S')">S</button>
+        <button class="button" onclick="appendDigit('T')">T</button>
+        <button class="button" onclick="appendDigit('7')">7</button>
+        <button class="button" onclick="appendDigit('8')">8</button>
+        <button class="button" onclick="appendDigit('9')">9</button>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="appendDigit('U')">U</button>
+        <button class="button" onclick="appendDigit('V')">V</button>
+        <button class="button" onclick="appendDigit('W')">W</button>
+        <button class="button" onclick="appendDigit('X')">X</button>
+        <button class="button" onclick="appendDigit('Y')">Y</button>
+        <button class="button" onclick="appendDigit('.')">.</button>
+        <button class="button" onclick="appendDigit('0')">0</button>
+        <button class="button" onclick="clearDisplay()">AC</button>
+    </div>
+    <div class="button-container">
+        <button class="button empty-button" onclick="clearDisplay()"></button>
+        <button class="button Z-button" onclick="appendDigit('Z')">Z</button>
+        <button class="button empty-button" onclick="clearDisplay()"></button>
+        <button class="button empty-button" onclick="window.location.href='/history'">History</button>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    const display = document.getElementById('display');
+    const hiddenInput = document.getElementById('hiddenInput');
+
+    function appendDigit(digit) {
+        if (display.textContent.includes('Ошибка')) clearDisplay();
+        if (digit === '.' && display.textContent.includes('.')) return;
+        if (display.textContent === '0') {
+            display.textContent = digit;
+        } else {
+            display.textContent += digit;
+        }
+        hiddenInput.value = display.textContent;
+    }
+
+    function backspace() {
+        if (display.textContent.includes('Ошибка')) {
+            clearDisplay();
+            return;
+        }
+        if (display.textContent.length > 1) {
+            display.textContent = display.textContent.slice(0, -1);
+        } else {
+            display.textContent = '0';
+        }
+        hiddenInput.value = display.textContent;
+    }
+
+    function clearDisplay() {
+        display.textContent = '0';
+        hiddenInput.value = '0';
+    }
+    document.querySelector('.convert-button').addEventListener('click', () => {
+        hiddenInput.value = display.textContent;
+    });
+</script>
+</body>
+</html>
